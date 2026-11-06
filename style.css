@@ -72,3 +72,37 @@ nav a:hover {
   border-radius: 20px;
   cursor: pointer;
 }
+
+.song-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+.song-card {
+  background: #181818;
+  padding: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.song-card:hover {
+  background: #282828;
+}
+
+.song-card img {
+  width: 100%;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.song-card h3 {
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.song-card p {
+  font-size: 14px;
+  color: #b3b3b3;
+}
