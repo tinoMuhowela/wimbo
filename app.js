@@ -1,36 +1,36 @@
 const songs = [
   {
-    title: "Sunrise",
-    artist: "Amani",
-    cover: "https://picsum.photos/seed/sunrise/300",
-    src: ""
-  },
-  {
     title: "Night Drive",
     artist: "Neo",
     cover: "https://picsum.photos/seed/nightdrive/300",
-    src: ""
+    src: "music/NightDrive.mp3"
   },
   {
     title: "Ocean Waves",
     artist: "Zuri",
     cover: "https://picsum.photos/seed/ocean/300",
-    src: ""
+    src: "music/OceanWaves.mp3"
   },
   {
-    title: "City Lights",
-    artist: "Kito",
-    cover: "https://picsum.photos/seed/city/300",
-    src: ""
+    title: "Everyday Is A Holiday",
+    artist: "Brotheration Records",
+    cover: "https://picsum.photos/seed/holiday/300",
+    src: "music/sunrise.mp3"
   }
 ];
 
+const audio = new Audio();
+let currentIndex = 0;
+
 const songList = document.querySelector(".song-list");
+const prevBtn = document.querySelector("#prev-btn");
+const playBtn = document.querySelector("#play-btn");
+const nextBtn = document.querySelector("#next-btn");
 
 function renderSongs() {
   songList.innerHTML = "";
 
-  songs.forEach(function (song) {
+  songs.forEach(function (song, index) {
     const card = document.createElement("div");
     card.classList.add("song-card");
 
@@ -40,8 +40,55 @@ function renderSongs() {
       <p>${song.artist}</p>
     `;
 
+    card.addEventListener("click", function () {
+      playSong(index);
+    });
+
     songList.appendChild(card);
   });
 }
+
+function playSong(index) {
+  currentIndex = index;
+  const song = songs[index];
+
+  audio.src = song.src;
+  audio.play();
+
+  document.querySelector(".now-playing").textContent =
+    song.title + " - " + song.artist;
+}
+
+function togglePlay() {
+  if (audio.src === "") {
+    playSong(0);
+  } else if (audio.paused) {
+    audio.play();
+  } else {
+    audio.pause();
+  }
+}
+
+function nextSong() {
+  playSong((currentIndex + 1) % songs.length);
+}
+
+function prevSong() {
+  playSong((currentIndex - 1 + songs.length) % songs.length);
+}
+
+playBtn.addEventListener("click", togglePlay);
+nextBtn.addEventListener("click", nextSong);
+prevBtn.addEventListener("click", prevSong);
+
+audio.addEventListener("play", function () {
+  playBtn.textContent = "Pause";
+});
+
+audio.addEventListener("pause", function () {
+  playBtn.textContent = "Play";
+});
+
+audio.addEventListener("ended", nextSong);
 
 renderSongs();
