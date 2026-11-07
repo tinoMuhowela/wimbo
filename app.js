@@ -26,6 +26,7 @@ const songList = document.querySelector(".song-list");
 const prevBtn = document.querySelector("#prev-btn");
 const playBtn = document.querySelector("#play-btn");
 const nextBtn = document.querySelector("#next-btn");
+const volumeSlider = document.querySelector("#volume-slider");
 
 function renderSongs() {
   songList.innerHTML = "";
@@ -41,6 +42,7 @@ function renderSongs() {
     `;
 
     card.addEventListener("click", function () {
+        console.log("You clicked card number", index);
       playSong(index);
     });
 
@@ -81,6 +83,7 @@ playBtn.addEventListener("click", togglePlay);
 nextBtn.addEventListener("click", nextSong);
 prevBtn.addEventListener("click", prevSong);
 
+
 audio.addEventListener("play", function () {
   playBtn.textContent = "Pause";
 });
@@ -90,5 +93,10 @@ audio.addEventListener("pause", function () {
 });
 
 audio.addEventListener("ended", nextSong);
+
+volumeSlider.addEventListener("input", function () {
+  audio.volume = Number(volumeSlider.value);
+});
+
 
 renderSongs();

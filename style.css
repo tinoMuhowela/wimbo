@@ -106,3 +106,16 @@ nav a:hover {
   font-size: 14px;
   color: #b3b3b3;
 }
+
+.volume {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #b3b3b3;
+  font-size: 14px;
+}
+
+.volume input {
+  width: 100px;
+  accent-color: #1db954;
+}
