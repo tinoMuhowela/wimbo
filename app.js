@@ -1,24 +1,12 @@
-const songs = [
-  {
-    title: "Night Drive",
-    artist: "Neo",
-    cover: "https://picsum.photos/seed/nightdrive/300",
-    src: "music/NightDrive.mp3"
-  },
-  {
-    title: "Ocean Waves",
-    artist: "Zuri",
-    cover: "https://picsum.photos/seed/ocean/300",
-    src: "music/OceanWaves.mp3"
-  },
-  {
-    title: "Everyday Is A Holiday",
-    artist: "Brotheration Records",
-    cover: "https://picsum.photos/seed/holiday/300",
-    src: "music/sunrise.mp3"
-  }
-];
+// 1. Data and settings
+const CLIENT_ID = "2e18b95f";
+const API_URL =
+  "https://api.jamendo.com/v3.0/tracks/?client_id=" + CLIENT_ID +
+  "&format=json&limit=30&order=popularity_week&imagesize=300";
 
+let songs = [];
+
+// 2. Variables and page elements
 const audio = new Audio();
 let currentIndex = 0;
 
@@ -27,6 +15,30 @@ const prevBtn = document.querySelector("#prev-btn");
 const playBtn = document.querySelector("#play-btn");
 const nextBtn = document.querySelector("#next-btn");
 const volumeSlider = document.querySelector("#volume-slider");
+
+// 3. Functions
+async function loadSongs() {
+  songList.innerHTML = "<p>Loading songs...</p>";
+
+  try {
+    const response = await fetch(API_URL);
+    const data = await response.json();
+
+    songs = data.results.map(function (track) {
+      return {
+        title: track.name,
+        artist: track.artist_name,
+        cover: track.image,
+        src: track.audio
+      };
+    });
+
+    renderSongs();
+  } catch (error) {
+    console.error(error);
+    songList.innerHTML = "<p>Could not load songs. Check your internet.</p>";
+  }
+}
 
 function renderSongs() {
   songList.innerHTML = "";
@@ -42,7 +54,6 @@ function renderSongs() {
     `;
 
     card.addEventListener("click", function () {
-        console.log("You clicked card number", index);
       playSong(index);
     });
 
@@ -79,10 +90,14 @@ function prevSong() {
   playSong((currentIndex - 1 + songs.length) % songs.length);
 }
 
+// 4. Event listeners
 playBtn.addEventListener("click", togglePlay);
 nextBtn.addEventListener("click", nextSong);
 prevBtn.addEventListener("click", prevSong);
 
+volumeSlider.addEventListener("input", function () {
+  audio.volume = Number(volumeSlider.value);
+});
 
 audio.addEventListener("play", function () {
   playBtn.textContent = "Pause";
@@ -94,9 +109,5 @@ audio.addEventListener("pause", function () {
 
 audio.addEventListener("ended", nextSong);
 
-volumeSlider.addEventListener("input", function () {
-  audio.volume = Number(volumeSlider.value);
-});
-
-
-renderSongs();
+// 5. Start
+loadSongs();
