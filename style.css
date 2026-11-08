@@ -119,3 +119,21 @@ nav a:hover {
   width: 100px;
   accent-color: #1db954;
 }
+
+.song-card {
+  position: relative;
+}
+
+.like-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: #1db954;
+  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+}

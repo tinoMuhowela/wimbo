@@ -16,6 +16,8 @@ const playBtn = document.querySelector("#play-btn");
 const nextBtn = document.querySelector("#next-btn");
 const volumeSlider = document.querySelector("#volume-slider");
 const searchInput = document.querySelector("#search-input");
+const homeLink = document.querySelector("#home-link");
+const likedLink = document.querySelector("#liked-link");
 
 // 3. Functions
 async function loadSongs(extra) {
@@ -26,12 +28,13 @@ async function loadSongs(extra) {
     const data = await response.json();
 
     songs = data.results.map(function (track) {
-      return {
-        title: track.name,
-        artist: track.artist_name,
-        cover: track.image,
-        src: track.audio
-      };
+     return {
+  id: track.id,
+  title: track.name,
+  artist: track.artist_name,
+  cover: track.image,
+  src: track.audio
+};
     });
 
     if (songs.length === 0) {
@@ -53,15 +56,26 @@ function renderSongs() {
     const card = document.createElement("div");
     card.classList.add("song-card");
 
-    card.innerHTML = `
-      <img src="${song.cover}" alt="${song.title} cover">
-      <h3>${song.title}</h3>
-      <p>${song.artist}</p>
-    `;
+   card.innerHTML = `
+  <img src="${song.cover}" alt="${song.title} cover">
+  <h3>${song.title}</h3>
+  <p>${song.artist}</p>
+  <button class="like-btn">${isLiked(song) ? "♥" : "♡"}</button>
+`;
+
 
     card.addEventListener("click", function () {
       playSong(index);
     });
+
+    const likeBtn = card.querySelector(".like-btn");
+
+likeBtn.addEventListener("click", function (event) {
+  event.stopPropagation();
+  toggleLike(song);
+  likeBtn.textContent = isLiked(song) ? "♥" : "♡";
+});
+
 
     songList.appendChild(card);
   });
@@ -96,6 +110,46 @@ function prevSong() {
   playSong((currentIndex - 1 + songs.length) % songs.length);
 }
 
+function getLiked() {
+  const saved = localStorage.getItem("wimbo-liked");
+  return saved ? JSON.parse(saved) : [];
+}
+
+function saveLiked(list) {
+  localStorage.setItem("wimbo-liked", JSON.stringify(list));
+}
+
+function isLiked(song) {
+  return getLiked().some(function (s) {
+    return s.id === song.id;
+  });
+}
+
+function toggleLike(song) {
+  let liked = getLiked();
+
+  if (isLiked(song)) {
+    liked = liked.filter(function (s) {
+      return s.id !== song.id;
+    });
+  } else {
+    liked.push(song);
+  }
+
+  saveLiked(liked);
+}
+
+function showLiked() {
+  songs = getLiked();
+
+  if (songs.length === 0) {
+    songList.innerHTML = "<p>No liked songs yet. Tap the heart on a song.</p>";
+    return;
+  }
+
+  renderSongs();
+}
+
 // 4. Event listeners
 playBtn.addEventListener("click", togglePlay);
 nextBtn.addEventListener("click", nextSong);
@@ -125,6 +179,18 @@ searchInput.addEventListener("keydown", function (event) {
       loadSongs("&search=" + encodeURIComponent(query));
     }
   }
+});
+
+homeLink.addEventListener("click", function (event) {
+  event.preventDefault();
+  searchInput.value = "";
+  loadSongs("&order=popularity_week");
+});
+
+likedLink.addEventListener("click", function (event) {
+  event.preventDefault();
+  searchInput.value = "";
+  showLiked();
 });
 
 // 5. Start
