@@ -1,8 +1,8 @@
 // 1. Data and settings
 const CLIENT_ID = "2e18b95f";
-const API_URL =
+const BASE_URL =
   "https://api.jamendo.com/v3.0/tracks/?client_id=" + CLIENT_ID +
-  "&format=json&limit=30&order=popularity_week&imagesize=300";
+  "&format=json&limit=30&imagesize=300";
 
 let songs = [];
 
@@ -15,13 +15,14 @@ const prevBtn = document.querySelector("#prev-btn");
 const playBtn = document.querySelector("#play-btn");
 const nextBtn = document.querySelector("#next-btn");
 const volumeSlider = document.querySelector("#volume-slider");
+const searchInput = document.querySelector("#search-input");
 
 // 3. Functions
-async function loadSongs() {
+async function loadSongs(extra) {
   songList.innerHTML = "<p>Loading songs...</p>";
 
   try {
-    const response = await fetch(API_URL);
+    const response = await fetch(BASE_URL + extra);
     const data = await response.json();
 
     songs = data.results.map(function (track) {
@@ -32,6 +33,11 @@ async function loadSongs() {
         src: track.audio
       };
     });
+
+    if (songs.length === 0) {
+      songList.innerHTML = "<p>No songs found. Try another word.</p>";
+      return;
+    }
 
     renderSongs();
   } catch (error) {
@@ -109,5 +115,17 @@ audio.addEventListener("pause", function () {
 
 audio.addEventListener("ended", nextSong);
 
+searchInput.addEventListener("keydown", function (event) {
+  if (event.key === "Enter") {
+    const query = searchInput.value.trim();
+
+    if (query === "") {
+      loadSongs("&order=popularity_week");
+    } else {
+      loadSongs("&search=" + encodeURIComponent(query));
+    }
+  }
+});
+
 // 5. Start
-loadSongs();
+loadSongs("&order=popularity_week");
