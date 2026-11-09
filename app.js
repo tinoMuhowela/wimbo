@@ -18,6 +18,9 @@ const volumeSlider = document.querySelector("#volume-slider");
 const searchInput = document.querySelector("#search-input");
 const homeLink = document.querySelector("#home-link");
 const likedLink = document.querySelector("#liked-link");
+const progressBar = document.querySelector("#progress-bar");
+const currentTimeEl = document.querySelector("#current-time");
+const durationEl = document.querySelector("#duration");
 
 // 3. Functions
 async function loadSongs(extra) {
@@ -147,6 +150,15 @@ function showLiked() {
     return;
   }
 
+  function formatTime(seconds) {
+  if (isNaN(seconds)) return "0:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return mins + ":" + (secs < 10 ? "0" : "") + secs;
+}
+
+
+
   renderSongs();
 }
 
@@ -192,6 +204,25 @@ likedLink.addEventListener("click", function (event) {
   searchInput.value = "";
   showLiked();
 });
+
+audio.addEventListener("timeupdate", function () {
+  if (audio.duration) {
+    progressBar.value = (audio.currentTime / audio.duration) * 100;
+    currentTimeEl.textContent = formatTime(audio.currentTime);
+  }
+});
+
+audio.addEventListener("loadedmetadata", function () {
+  durationEl.textContent = formatTime(audio.duration);
+});
+
+progressBar.addEventListener("input", function () {
+  if (audio.duration) {
+    audio.currentTime = (progressBar.value / 100) * audio.duration;
+  }
+});
+
+
 
 // 5. Start
 loadSongs("&order=popularity_week");

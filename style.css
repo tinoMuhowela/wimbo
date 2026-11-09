@@ -137,3 +137,28 @@ nav a:hover {
   border-radius: 50%;
   cursor: pointer;
 }
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: #b3b3b3;
+}
+
+.progress input {
+  width: 300px;
+  accent-color: #1db954;
+}
