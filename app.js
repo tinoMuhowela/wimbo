@@ -9,6 +9,7 @@ let songs = [];
 // 2. Variables and page elements
 const audio = new Audio();
 let currentIndex = 0;
+let failCount = 0;
 
 const songList = document.querySelector(".song-list");
 const prevBtn = document.querySelector("#prev-btn");
@@ -21,6 +22,7 @@ const likedLink = document.querySelector("#liked-link");
 const progressBar = document.querySelector("#progress-bar");
 const currentTimeEl = document.querySelector("#current-time");
 const durationEl = document.querySelector("#duration");
+const nowPlaying = document.querySelector(".now-playing");
 
 // 3. Functions
 async function loadSongs(extra) {
@@ -84,15 +86,24 @@ likeBtn.addEventListener("click", function (event) {
   });
 }
 
+function formatTime(seconds) {
+  if (isNaN(seconds)) return "0:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return mins + ":" + (secs < 10 ? "0" : "") + secs;
+}
+
 function playSong(index) {
   currentIndex = index;
   const song = songs[index];
 
   audio.src = song.src;
-  audio.play();
 
-  document.querySelector(".now-playing").textContent =
-    song.title + " - " + song.artist;
+  audio.play().catch(function (error) {
+    console.error("play() failed:", error);
+  });
+
+  nowPlaying.textContent = song.title + " - " + song.artist;
 }
 
 function togglePlay() {
@@ -150,17 +161,13 @@ function showLiked() {
     return;
   }
 
-  function formatTime(seconds) {
-  if (isNaN(seconds)) return "0:00";
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return mins + ":" + (secs < 10 ? "0" : "") + secs;
-}
-
+ 
 
 
   renderSongs();
 }
+
+
 
 // 4. Event listeners
 playBtn.addEventListener("click", togglePlay);
@@ -220,6 +227,23 @@ progressBar.addEventListener("input", function () {
   if (audio.duration) {
     audio.currentTime = (progressBar.value / 100) * audio.duration;
   }
+});
+
+audio.addEventListener("error", function () {
+  failCount++;
+
+  if (failCount >= songs.length) {
+    nowPlaying.textContent = "No songs could be played. Check your internet.";
+    failCount = 0;
+    return;
+  }
+
+  nowPlaying.textContent = "This song could not be played. Skipping...";
+  setTimeout(nextSong, 1500);
+});
+
+audio.addEventListener("playing", function () {
+  failCount = 0;
 });
 
 
