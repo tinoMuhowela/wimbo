@@ -23,6 +23,7 @@ const progressBar = document.querySelector("#progress-bar");
 const currentTimeEl = document.querySelector("#current-time");
 const durationEl = document.querySelector("#duration");
 const nowPlaying = document.querySelector(".now-playing");
+const searchLink = document.querySelector("#search-link");
 
 // 3. Functions
 async function loadSongs(extra) {
@@ -244,6 +245,11 @@ audio.addEventListener("error", function () {
 
 audio.addEventListener("playing", function () {
   failCount = 0;
+});
+
+searchLink.addEventListener("click", function (event) {
+  event.preventDefault();
+  searchInput.focus();
 });
 
 
